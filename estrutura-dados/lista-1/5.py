@@ -1,5 +1,8 @@
-#Faça um Programa que leia 20 números inteiros e armazene-os uma lista. Armazene os números pares na lista PAR e os números IMPARES na lista impar. Imprima as três listas.
-
+"""
+Faça um Programa que leia 20 números inteiros e armazene-os uma lista.
+Armazene os números pares na lista PAR e os números IMPARES na lista impar.
+Imprima as três listas.
+"""
 lista = []
 
 print('Digite 20 números inteiros:')

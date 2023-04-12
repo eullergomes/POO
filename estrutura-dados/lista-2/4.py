@@ -5,6 +5,7 @@ formato chave: nome-idade-fone
 """
 
 agenda = {}
+i = 0
 
 #cadastrar
 while True:
@@ -13,16 +14,15 @@ while True:
     idade = int(input('Digita a idade: '))
     telefone = int(input('Digite o telefone: '))
 
-    #dicionario composto
-    agenda[cpf] = {'nome': nome, 'idade': idade, 'telefone': telefone}
-
+    agenda[i] = {'nome': nome, 'idade': idade, 'telefone': telefone}
+    i += 1
     opc = input('Deseja cadastrar mais pessoas? (S/N) ')
     if opc.lower() == 'n':
         break
 
 #imprimir
-for cpf in agenda:
-    pessoa = agenda[cpf]
+for i in agenda:
+    pessoa = agenda[i]
     nome = pessoa['nome']
     idade = pessoa['idade']
     telefone = pessoa['telefone']
