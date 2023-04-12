@@ -1,11 +1,11 @@
 """
 Criar um sistema de cadastro de funcionários em python que atenda aos seguintes requisitos.
 
-    1. O sistema deverá ter um menu com as seguintes opções do sistema
+O sistema deverá ter um menu com as seguintes opções do sistema
     1. Cadastro de Funcionários
     2. Pesquisar funcionário
     3. Cadastrar novo telefone
-        4. Editar dados do Funcionário
+    4. Editar dados do Funcionário
     5. Deletar funcionário
     0. Sair
 
@@ -21,45 +21,68 @@ lista de Funcionários
 
 funcionarios = [] #lista de funcionários
 
-def inserirFuncionarios (lista, dados):
-    lista.append(dados)
-
-
 def imprimir (lista):
     print("\nFuncionários:\n")
     for  funcionario in lista:
         print(f"Nome: {funcionario['nome']} - CPF: {funcionario['cpf']}")
 
-def cadastroFuncionario ():
+def cadastroFuncionario (lista):
     nome = input("Digite o nome: ")
     cpf = int(input("Digite o CPF: "))
+    telefones = []
+    print(f"Digite a quantidade de telefone do funcionário {nome}: ")
+    qtd = int(input()) #2
+    
+    for i in range(qtd):
+        print(f"Digite o {i+1}º telefone: ")
+        telefone = int(input())
+        telefones.append(telefone)
 
-    funcionario = {"nome": nome, "cpf": cpf}
+    funcionario = {"nome": nome, "cpf": cpf, "telefones": telefones}
 
     funcionarios.append(funcionario)
 
 def pesquisarFuncionario (lista):
-    cpf = int(input("Digite o CPF: "))
-
-    for funcionario in lista:
-        if cpf == funcionario['cpf']:
-            imprimir(lista)
+    funcionario = research(lista)
+    if funcionario:
+        print(f"Nome: {funcionario['nome']}\nCPF: {funcionario['cpf']}\nTelefones: {funcionario['telefones']}")
+    else:
+        print("\nCPF não encontrado!")
 
 def deletarFuncionario (lista):
-    cpf = int(input("Digite o CPF: "))
+    funcionario = research(lista)
+    if funcionario:
+        lista.remove(funcionario)
+        print("\nFuncionário deletado!")
+    else:
+        print("\nCPF não encontrado!")
 
+def research (lista):
+    cpf = int(input("Digite o CPF: "))
     for funcionario in lista:
         if cpf == funcionario['cpf']:
-            del funcionario
-    print("\nFuncionário deletado com sucesso!\n")
+            return funcionario
+    return 
+
+def addNewPhone (lista):
+    funcionario = research(lista)
+    if funcionario:
+        print(f"Digite um novo telefone para o funcionário {funcionario['nome']}: ")
+        telefone = int(input())
+
+        funcionario['telefones'].append(telefone)
+        print("\nNovo telefone cadastrado!")
+    else:
+        print("\nCPF não encontrado!")
 
 def menu ():
-    print("MENU")
+    print("\nMENU")
     print("1. Cadastro de Funcionários")
     print("2. Pesquisar funcionário")
     print("3. Cadastrar novo telefone")
     print("4. Editar dados do Funcionário")
     print("5. Deletar funcionário")
+    print("6. Mostrar todos os funcionários (extra)")
     print("0. Sair")
     
     print("\nInforme a opção: ")
@@ -70,28 +93,25 @@ while True:
 
     match opc:
         case 1:
-            cadastroFuncionario()
+            cadastroFuncionario(funcionarios)
         case 2:
-            imprimir(funcionarios)
+            if funcionarios:
+                pesquisarFuncionario(funcionarios)
+            else:
+                print("\nNão há funcionários cadastrados")   
         case 3:
-            pesquisarFuncionario(funcionarios)
-        case 4:
-            deletarFuncionario(funcionarios)
+            if funcionarios:
+                addNewPhone(funcionarios)
+            else:
+                print("\nNão há funcionários cadastrados")         
+        case 5:
+            if funcionarios:
+                deletarFuncionario(funcionarios)
+            else:
+                print("\nNão há funcionários cadastrados")
         case 0:
-            print("\nEcerrando...\n")
+            print("\nEncerrando...\n")
             break
+        case _:
+            print("\nOpção não encontrada!\n")
 
-    opc = input("\nDeseja continuar o programa? (S/N) ")
-    if opc.lower() == 'n':
-        print("\nEcerrando...\n")
-        break
-        
-def menu():
-    print("MENU")
-    print("1. Cadastro de Funcionários")
-    print("2. Pesquisar funcionário")
-    print("3. Cadastrar novo telefone")
-    print("4. Editar dados do Funcionário")
-    print("5. Deletar funcionário")
-    print("0. Sair")
-    print("\nInforme a opção: ")
