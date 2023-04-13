@@ -1,36 +1,19 @@
-"""
-Criar um sistema de cadastro de funcionários em python que atenda aos seguintes requisitos.
-
-O sistema deverá ter um menu com as seguintes opções do sistema
-    1. Cadastro de Funcionários
-    2. Pesquisar funcionário
-    3. Cadastrar novo telefone
-    4. Editar dados do Funcionário
-    5. Deletar funcionário
-    0. Sair
-
-2. Cada funcionário deverá ser um dicionário com os seguintes atributos (chaves): NOME, CPF, CARGO, SALARIO, TELEFONES.
-Onde a chave telefones deve receber uma lista de telefones. Os funcionários (dicionários) deverao ser armazenados em uma 
-lista de Funcionários
-3. O sistema deve ter uma função para encontra (pesquisar) um funcionário pelo seu cpf e exibir na tela seus dados
-4. O sistema deve ter uma função para encontrar um funcionário e adicionar um novo telefone
-5. O sistema deve ter uma função capaz de encontar um funcionário e editar seus dados
-6. O sistema deve ter uma função para deletar um funcionário
-7. Caso nao exista um funcionário o sistema nao devera executar as opções 2, 3, 4 e 5
-"""
-
 funcionarios = [] #lista de funcionários
 
 def imprimir (lista):
-    print("\nFuncionários:\n")
-    for  funcionario in lista:
-        print(f"Nome: {funcionario['nome']} - CPF: {funcionario['cpf']}")
+    print("\nFUNCIONÁRIOS:")
+    for funcionario in lista:
+        print("--------------------------------")
+        print(f"Nome: {funcionario['nome']}\nCPF: {funcionario['cpf']}\nCargo: {funcionario['cargo']}\nSalário: {round(funcionario['salario'], 2)}\nTelefones: {funcionario['telefones']}")
+        print("--------------------------------")
 
 def cadastroFuncionario (lista):
     nome = input("Digite o nome: ")
     cpf = int(input("Digite o CPF: "))
+    cargo = input("Digite o cargo: ")
+    salario = float(input("Digite o salário: "))
     telefones = []
-    print(f"Digite a quantidade de telefone do funcionário {nome}: ")
+    print(f"Digite a quantidade de telefones do funcionário {nome}: ")
     qtd = int(input()) #2
     
     for i in range(qtd):
@@ -38,14 +21,17 @@ def cadastroFuncionario (lista):
         telefone = int(input())
         telefones.append(telefone)
 
-    funcionario = {"nome": nome, "cpf": cpf, "telefones": telefones}
+    funcionario = {"nome": nome, "cpf": cpf, "cargo": cargo,"salario": salario,"telefones": telefones}
 
     funcionarios.append(funcionario)
+
+    print("\nFuncionário cadastrado!")
 
 def pesquisarFuncionario (lista):
     funcionario = research(lista)
     if funcionario:
-        print(f"Nome: {funcionario['nome']}\nCPF: {funcionario['cpf']}\nTelefones: {funcionario['telefones']}")
+        print("\nFUNCIONÁRIO:")
+        print(f"Nome: {funcionario['nome']}\nCPF: {funcionario['cpf']}\nCargo: {funcionario['cargo']}\nSalário: R$ {round(funcionario['salario'], 2)}\nTelefones: {funcionario['telefones']}")
     else:
         print("\nCPF não encontrado!")
 
@@ -75,6 +61,27 @@ def addNewPhone (lista):
     else:
         print("\nCPF não encontrado!")
 
+def edit(lista):
+        funcionario = research(lista)
+        if funcionario:
+            print(f"\nAlterar dados do funcionário {funcionario['nome']}")
+            funcionario['cargo'] = input('Digite o novo cargo: ')
+            funcionario['salario'] = float(input('Digite o novo salário: '))
+            funcionario['telefones'].clear()
+
+            print(f"Digite a quantidade de telefones para cadastrar: ")
+            qtd = int(input()) #2
+    
+            for i in range(qtd):
+                print(f"Digite o {i+1}º telefone: ")
+                telefone = int(input())
+                funcionario['telefones'].append(telefone)
+
+            print("\nDados alterados!")
+        else:
+            print("\nCPF não encontrado!")
+
+
 def menu ():
     print("\nMENU")
     print("1. Cadastro de Funcionários")
@@ -103,15 +110,25 @@ while True:
             if funcionarios:
                 addNewPhone(funcionarios)
             else:
-                print("\nNão há funcionários cadastrados")         
+                print("\nNão há funcionários cadastrados")    
+        case 4:
+            if funcionarios:
+                edit(funcionarios)
+            else:
+                print("\nNão há funcionários cadastrados") 
         case 5:
             if funcionarios:
                 deletarFuncionario(funcionarios)
+            else:
+                print("\nNão há funcionários cadastrados")
+        case 6:
+            if funcionarios:
+                imprimir(funcionarios)
             else:
                 print("\nNão há funcionários cadastrados")
         case 0:
             print("\nEncerrando...\n")
             break
         case _:
-            print("\nOpção não encontrada!\n")
+            print("\nOpção não encontrada!")
 
