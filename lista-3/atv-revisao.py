@@ -1,3 +1,24 @@
+"""
+Criar um sistema de cadastro de funcionários em python que atenda aos seguintes requisitos:
+
+O sistema deverá ter um menu com as seguintes opções do sistema:
+1. Cadastro de Funcionários
+2. Pesquisar funcionário
+3. Cadastrar novo telefone
+4. Editar dados do Funcionário
+5. Deletar funcionário
+0. Sair
+
+2. Cada funcionário deverá ser um dicionário com os seguintes atributos (chaves): NOME, CPF, CARGO, SALARIO, TELEFONES.
+Onde a chave telefones deve receber uma lista de telefones. Os funcionários (dicionários) deverao ser armazenados em uma lista de Funcionários
+
+3. O sistema deve ter uma função para encontra (pesquisar) um funcionário pelo seu cpf e exibir na tela seus dados
+4. O sistema deve ter uma função para encontrar um funcionário e adicionar um novo telefone
+5. O sistema deve ter uma função capaz de encontar um funcionário e editar seus dados
+6. O sistema deve ter uma função para deletar um funcionário
+7. Caso nao exista um funcionário o sistema nao devera executar as opções 2, 3, 4 e 5
+"""
+
 funcionarios = [] #lista de funcionários
 
 def imprimir (lista):
@@ -14,7 +35,7 @@ def cadastroFuncionario (lista):
     salario = float(input("Digite o salário: "))
     telefones = []
     print(f"Digite a quantidade de telefones do funcionário {nome}: ")
-    qtd = int(input()) #2
+    qtd = int(input())
     
     for i in range(qtd):
         print(f"Digite o {i+1}º telefone: ")
@@ -23,7 +44,7 @@ def cadastroFuncionario (lista):
 
     funcionario = {"nome": nome, "cpf": cpf, "cargo": cargo,"salario": salario,"telefones": telefones}
 
-    funcionarios.append(funcionario)
+    lista.append(funcionario)
 
     print("\nFuncionário cadastrado!")
 
@@ -70,7 +91,7 @@ def edit(lista):
             funcionario['telefones'].clear()
 
             print(f"Digite a quantidade de telefones para cadastrar: ")
-            qtd = int(input()) #2
+            qtd = int(input()) 
     
             for i in range(qtd):
                 print(f"Digite o {i+1}º telefone: ")
@@ -84,10 +105,10 @@ def edit(lista):
 
 def menu ():
     print("\nMENU")
-    print("1. Cadastro de Funcionários")
+    print("1. Cadastro de funcionários")
     print("2. Pesquisar funcionário")
     print("3. Cadastrar novo telefone")
-    print("4. Editar dados do Funcionário")
+    print("4. Editar dados do funcionário")
     print("5. Deletar funcionário")
     print("6. Mostrar todos os funcionários (extra)")
     print("0. Sair")

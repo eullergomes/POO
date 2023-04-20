@@ -18,14 +18,16 @@ while True:
 
     opc = input('Deseja cadastrar mais pessoas? (S/N) ')
     if opc.lower() == 'n':
+        print(agenda)
         break
 
 #imprimir
-for cpf in agenda:
-    pessoa = agenda[cpf]
-    nome = pessoa['nome']
-    idade = pessoa['idade']
-    telefone = pessoa['telefone']
+# for cpf in agenda:
+#     pessoa = agenda[cpf]
+#     nome = pessoa['nome']
+#     idade = pessoa['idade']
+#     telefone = pessoa['telefone']
 
-    print(f'\nCPF - {cpf}\nNome: {nome}, idade: {idade}, telefone: {telefone}')
+#     print(f'\nCPF - {cpf}\nNome: {nome}, idade: {idade}, telefone: {telefone}')
+
     
