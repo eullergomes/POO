@@ -1,5 +1,8 @@
+#biblioteca para gerar strings que não se repetem
+import shortuuid
+
 def menu ():
-    print("\nMENU")
+    print("MENU")
     print("1. Gerencimento de Motoristas")
     print("2. Gerencimento de Veículos")
     print("3. Gerencimento de Viagem")
@@ -22,15 +25,21 @@ def menuMotoristas():
 def cadastro_motorista (motoristas):
     nome = input("Digite o nome: ")
     cpf = int(input("Digite o CPF: "))
-    rg = int(input("Digite o RG: "))
-    cnh = int(input("Digite o CNH: "))
-    motorista = {}
+    verificar_cpf = check_motorista(motoristas, cpf)
+    #verifica se o CPF já existe
+    if not verificar_cpf:
+        rg = int(input("Digite o RG: "))
+        cnh = int(input("Digite o CNH: "))
+        motorista = {}
 
-    motorista[cpf] = {"nome": nome, "CPF": cpf, "RG": rg, "CNH": cnh}
+        motorista[cpf] = {"nome": nome, "CPF": cpf, "RG": rg, "CNH": cnh, "qtdViagens": 0}
 
-    motoristas.update(motorista)
-
-    print("\nMotorista cadastrado!\n")    
+        motoristas.update(motorista) 
+        
+        print("\nMotorista cadastrado!\n") 
+    else:
+        print("\nERRO! Já existe um motorista cadastrado com esse CPF\n")
+        return 
 
 #imprime o motorista pesquisado
 def pesquisar_motorista (motoristas):
@@ -103,16 +112,23 @@ def cadastroVeiculo (veiculos):
     modelo = input("Digite o modelo: ")
     ano = int(input("Digite o ano: "))
     placa = input("Digite a placa: ")
-    chassi = input("Digite o chassi: ")
-    cor = input("Digite a cor: ")
-    km = float(input("Digite a kilômetragem: "))
-    veiculo = {}
+    
+    verificar_placa = check_placa(veiculos, placa)
+    
+    if not verificar_placa:
+        chassi = input("Digite o chassi: ")
+        cor = input("Digite a cor: ")
+        km = float(input("Digite a kilômetragem: "))
+        veiculo = {}
 
-    veiculo[placa] = {"marca": marca, "modelo": modelo, "ano": ano, "placa": placa, "chassi": chassi, "cor": cor, "km": km}
+        veiculo[placa] = {"marca": marca, "modelo": modelo, "ano": ano, "placa": placa, "chassi": chassi, "cor": cor, "km": km}
 
-    veiculos.update(veiculo)
+        veiculos.update(veiculo)
 
-    print("\nVeículo cadastrado!")   
+        print("\nVeículo cadastrado!\n")   
+        return
+    else:
+        print("\nERRO! Já existe um veículo cadastrado com essa placa\n")
     
 #imprime o veículo pesquisado
 def pesquisarVeiculo (veiculos):
@@ -184,6 +200,10 @@ def cadastrar_viagem(viagens, motoristas, veiculos):
     destino = input("Informe o destino: ")
     origem = input("Informe a origem: ")
     distancia = float(input("Informe a distância em KM: "))
+    if distancia <= 0:
+        print("\nERRO! a distância não pode ser negativa ou zero!\n")
+        return
+        
     cpf = int(input("Informe o CPF do motorista: "))
     placa = input("Informe a placa do veículo: ")
     
@@ -191,42 +211,44 @@ def cadastrar_viagem(viagens, motoristas, veiculos):
     veiculo = check_placa(veiculos, placa)
     
     if motorista and veiculo:
-        id = input("Informe uma ID para a viagem (exclusiva): ")
+        cod = shortuuid.uuid()[:8] #recebe uma string exclusiva de 8 caracteres
         viagem = {}
-        viagem[id] = {"destino": destino, "origem": origem, "distancia": distancia, "motorista": motorista, "veiculo": veiculo}
+        viagem[cod] = {"destino": destino, "origem": origem, "distancia": distancia, "motorista": motorista, "veiculo": veiculo}
         
         viagens.update(viagem)
+        veiculo['km'] += distancia #atualiza a quilometragem do veiculo a cada registro de viagem
+        motorista['qtdViagens'] += 1 #atualiza a qtd de viajens do motorista a cada registro de viagem
         
-        print("\nViagem cadastrada!\n")
+        print("\nViagem cadastrada!")
+        print(f"Código da viagem: {cod}\n")
     else:
         print("\nCPF do motorista ou placa do veículo inválido!\n")
 
 def editar_viagem(viagens, motoristas, veiculos):
-    id = input("Informe o ID da viagem: ")
-    viagem = check_viagem(viagens, id)
+    cod = input("Informe código da viagem: ")
+    viagem = check_viagem(viagens, cod)
     
     if viagem:
-        cpf = int(input("Digite um novo CPF de motorista: "))
-        placa = input("Digite uma nova placa de veículo: ")
+        print("VIAGEM ENCONTRADA")
+        cpf = int(input("\nDigite o CPF do novo motorista: "))
+        placa = input("Digite a placa do novo veículo: ")
         motorista = check_motorista(motoristas, cpf)
         veiculo = check_placa(veiculos, placa)
-        
-        if motorista and veiculo:
-            viagem['destino'] = input("Digite o novo destino: ")
-            viagem['origem'] = input("Digite a nova origem: ")
-            viagem['distancia'] = input("Digite a nova distância: ")
+    
+        if motorista and veiculo:            
             viagem['motorista'] = motorista
             viagem['veiculo'] = veiculo
             
             print("\nViagem alterada com sucesso!\n")
+
         else:
             print("\nCPF do motorista ou placa do veículo inválido!\n")     
     else:
         print("\nViagem não encontrada!\n")
     
-def check_viagem(viagens, id):
+def check_viagem(viagens, cod):
     for chave in viagens:
-        if id == chave:
+        if cod == chave:
             return viagens[chave]
     return
 
@@ -241,13 +263,14 @@ def registrar_abastecimento(abastecimentos, veiculos):
         data = input("Digite a data no formato dd/mm/aaaa: ")
         quantidade = float(input("Digite a quantidade do abastecimento em L: "))
         
+        cod = shortuuid.uuid()[:8] #recebe uma string exclusiva de 8 caracteres
         abastecimento = {}        
-        abastecimento[placa] = {"veiculo": veiculo, "valor": valor, "data": data, "quantidade": quantidade}
+        abastecimento[cod] = {"veiculo": veiculo, "valor": valor, "data": data, "quantidade": quantidade}
         
         abastecimentos.update(abastecimento)
         
-        print("\nAbastecimento cadastrado!\n")
-        
+        print("\nAbastecimento cadastrado!")
+        print(f"Código do abastecimento: {cod}\n")
         
     else:
         print("\nVeículo não encontrado!\n")
@@ -262,16 +285,17 @@ def registrar_manutencao(manutencoes, veiculos):
         tipo = input("Digite o tipo de manutenção: ")
         custo = float(input("Digite o custo da manutenção R$: "))
         
+        cod = shortuuid.uuid()[:8] #recebe uma string exclusiva de 8 caracteres
         manutencao = {}        
-        manutencao[placa] = {"veiculo": veiculo, "data": data, "tipo": tipo, "custo": custo}
+        manutencao[cod] = {"veiculo": veiculo, "data": data, "tipo": tipo, "custo": custo}
         
         manutencoes.update(manutencao)
         
-        print("\nManutenção cadastrada!\n")
-        
+        print("\nManutenção cadastrada!")
+        print(f"Código da manuteção: {cod}\n")
         
     else:
-        print("\nVeículo não encontrado!\n")
+        print("\nVeículo não encontrado!\n") 
 
 def relatorio (veiculos, motoristas, viagens, abastecimentos, manutencoes):
     print("RELATÓRIO:\n")
@@ -291,9 +315,31 @@ def relatorio (veiculos, motoristas, viagens, abastecimentos, manutencoes):
     print(manutencoes)
     
     
-motoristas = {}    
-veiculos = {}
-viagens = {}
+# motoristas = {}    
+# veiculos = {}
+# viagens = {}
+veiculos={"BCC009":{"marca":"Fiat", "modelo":"UNO", "ano":2003, 
+                    "placa":"BCC009", "chassi":"36563652", "cor":"Branco","km":500},
+         "BCC006":{"marca":"Fiat", "modelo":"Toro", "ano":2003, 
+                   "placa":"BCC006", "chassi":"36563652","cor":"Branco","km":500},
+         "BCC008":{"marca":"Fiat", "modelo":"Argo", "ano":2003, 
+                   "placa":"BCC007", "chassi":"36563652","cor":"Branco","km":500}  }
+
+motoristas={11111:{"nome":"François", "CPF":11111, "RG":223212, "CNH":34221},
+            22222:{"nome":"Ana", "CPF":22222, "RG":223212, "CNH":34221},
+            33333:{"nome":"Maria", "CPF":33333, "RG":223212, "CNH":"34221"}}
+
+viagens = {
+    1: {"destino":"Bacabal", "origem":"Caxias", "distância":200.0, "motorista":motoristas[11111], "veiculo":veiculos["BCC009"]},
+    2: {"destino":"Bacabal", "origem":"Caxias", "distância":200.0, "motorista":motoristas[11111], "veiculo":veiculos["BCC009"]},
+    3: {"destino":"Bacabal", "origem":"Caxias", "distância":300.0, "motorista":motoristas[33333], "veiculo":veiculos["BCC009"]},
+    4: {"destino":"Bacabal", "origem":"Caxias", "distância":100.0, "motorista":motoristas[22222], "veiculo":veiculos["BCC009"]},
+    5: {"destino":"Bacabal", "origem":"Caxias", "distância":100.0, "motorista":motoristas[22222], "veiculo":veiculos["BCC009"]},
+    6: {"destino":"Bacabal", "origem":"Caxias", "distância":200.0, "motorista":motoristas[11111], "veiculo":veiculos["BCC009"]}
+
+
+
+}
 abastecimentos = {}
 manutencoes = {}
 
@@ -392,6 +438,8 @@ while True:
                 relatorio(veiculos, motoristas, viagens, abastecimentos, manutencoes)
             else:
                 print("\nNão há nada cadastrado!\n")
+        # case 7:
+        #     qtdViagens(viagens, motoristas)
                     
         case 0:
             print("\nEncerrando...\n")
