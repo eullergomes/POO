@@ -32,7 +32,7 @@ def cadastro_motorista (motoristas):
         cnh = int(input("Digite o CNH: "))
         motorista = {}
 
-        motorista[cpf] = {"nome": nome, "CPF": cpf, "RG": rg, "CNH": cnh, "qtdViagens": 0}
+        motorista[cpf] = {"nome": nome, "CPF": cpf, "RG": rg, "CNH": cnh, "qtdViagens": 0, "km": 0}
 
         motoristas.update(motorista) 
         
@@ -121,7 +121,7 @@ def cadastroVeiculo (veiculos):
         km = float(input("Digite a kilômetragem: "))
         veiculo = {}
 
-        veiculo[placa] = {"marca": marca, "modelo": modelo, "ano": ano, "placa": placa, "chassi": chassi, "cor": cor, "km": km}
+        veiculo[placa] = {"marca": marca, "modelo": modelo, "ano": ano, "placa": placa, "chassi": chassi, "cor": cor, "km": km, "abastecimento": 0.0, "manutencao": 0.0}
 
         veiculos.update(veiculo)
 
@@ -211,13 +211,15 @@ def cadastrar_viagem(viagens, motoristas, veiculos):
     veiculo = check_placa(veiculos, placa)
     
     if motorista and veiculo:
-        cod = shortuuid.uuid()[:8] #recebe uma string exclusiva de 8 caracteres
+        cod = shortuuid.uuid()[:4] #recebe uma string exclusiva de 4 caracteres
         viagem = {}
         viagem[cod] = {"destino": destino, "origem": origem, "distancia": distancia, "motorista": motorista, "veiculo": veiculo}
         
         viagens.update(viagem)
         veiculo['km'] += distancia #atualiza a quilometragem do veiculo a cada registro de viagem
-        motorista['qtdViagens'] += 1 #atualiza a qtd de viajens do motorista a cada registro de viagem
+        
+        motorista['qtdViagens'] += 1 #atualiza dados do motorista a cada viajem registrada
+        motorista['km'] += distancia
         
         print("\nViagem cadastrada!")
         print(f"Código da viagem: {cod}\n")
@@ -235,8 +237,10 @@ def editar_viagem(viagens, motoristas, veiculos):
         motorista = check_motorista(motoristas, cpf)
         veiculo = check_placa(veiculos, placa)
     
-        if motorista and veiculo:            
+        if motorista and veiculo:      
+            viagens[cod]['motorista']['qtdViagens'] -= 1
             viagem['motorista'] = motorista
+            viagem['motorista']['qtdViagens'] += 1
             viagem['veiculo'] = veiculo
             
             print("\nViagem alterada com sucesso!\n")
@@ -263,9 +267,11 @@ def registrar_abastecimento(abastecimentos, veiculos):
         data = input("Digite a data no formato dd/mm/aaaa: ")
         quantidade = float(input("Digite a quantidade do abastecimento em L: "))
         
-        cod = shortuuid.uuid()[:8] #recebe uma string exclusiva de 8 caracteres
+        cod = shortuuid.uuid()[:4] #recebe uma string exclusiva de 4 caracteres
         abastecimento = {}        
         abastecimento[cod] = {"veiculo": veiculo, "valor": valor, "data": data, "quantidade": quantidade}
+        
+        veiculo['abastecimento'] += valor
         
         abastecimentos.update(abastecimento)
         
@@ -285,9 +291,11 @@ def registrar_manutencao(manutencoes, veiculos):
         tipo = input("Digite o tipo de manutenção: ")
         custo = float(input("Digite o custo da manutenção R$: "))
         
-        cod = shortuuid.uuid()[:8] #recebe uma string exclusiva de 8 caracteres
+        cod = shortuuid.uuid()[:4] #recebe uma string exclusiva de 4 caracteres
         manutencao = {}        
         manutencao[cod] = {"veiculo": veiculo, "data": data, "tipo": tipo, "custo": custo}
+        
+        veiculo['manutencao'] += custo
         
         manutencoes.update(manutencao)
         
@@ -297,51 +305,78 @@ def registrar_manutencao(manutencoes, veiculos):
     else:
         print("\nVeículo não encontrado!\n") 
 
-def relatorio (veiculos, motoristas, viagens, abastecimentos, manutencoes):
-    print("RELATÓRIO:\n")
-    print("Veículos")
-    print(veiculos)
-    
-    print("\nMotoristas:")
-    print(motoristas)
-    
-    print("\nViagens:")
-    print(viagens)
-    
-    print("\nAbastecimentos:")
-    print(abastecimentos)
-    
-    print("\nManutenções:")
-    print(manutencoes)
-    
-    
-# motoristas = {}    
-# veiculos = {}
-# viagens = {}
-veiculos={"BCC009":{"marca":"Fiat", "modelo":"UNO", "ano":2003, 
-                    "placa":"BCC009", "chassi":"36563652", "cor":"Branco","km":500},
-         "BCC006":{"marca":"Fiat", "modelo":"Toro", "ano":2003, 
-                   "placa":"BCC006", "chassi":"36563652","cor":"Branco","km":500},
-         "BCC008":{"marca":"Fiat", "modelo":"Argo", "ano":2003, 
-                   "placa":"BCC007", "chassi":"36563652","cor":"Branco","km":500}  }
 
-motoristas={11111:{"nome":"François", "CPF":11111, "RG":223212, "CNH":34221},
-            22222:{"nome":"Ana", "CPF":22222, "RG":223212, "CNH":34221},
-            33333:{"nome":"Maria", "CPF":33333, "RG":223212, "CNH":"34221"}}
+def motorista_km (motoristas):
+    motorista = {}
+    maior = 0
+    for chave in motoristas:
+        if motoristas[chave]['km'] > maior:
+            maior = motoristas[chave]['km']
+            motorista = motoristas[chave]
+    return motorista
+
+def veiculo_km (veiculos):
+    veiculo = {}
+    maior = 0
+    for chave in veiculos:
+        if veiculos[chave]['km'] > maior:
+            maior = veiculos[chave]['km']
+            veiculo = veiculos[chave]
+    return veiculo
+
+def abastecimento (veiculos):
+    despesa = 0.0
+    for chave in veiculos:
+        despesa += veiculos[chave]['abastecimento']
+    return despesa
+
+def manutencao (veiculos):
+    despesa = 0.0
+    for chave in veiculos:
+        despesa += veiculos[chave]['manutencao']
+    return despesa
+    
+def relatorio (veiculos, motoristas):
+    print("\nRELATÓRIO:")
+    print(f"Quantidade de motoristas: {len(motoristas)}")
+    print(f"Quantidade de veículos: {len(veiculos)}")
+    print(f"Motorista que mais km percorreu: {motorista_km(motoristas)['nome']}, {motorista_km(motoristas)['km']} km")
+    print(f"Veículo com maior km: {veiculo_km(veiculos)['placa']}, {veiculo_km(veiculos)['km']} km")
+    print(f"Total de despesas com abastecimento: R$ {abastecimento(veiculos)}")
+    print(f"Total de despesas com manutenção: R$ {manutencao(veiculos)}\n")
+    
+
+###############  DADOS PRONTOS  ##############
+    
+veiculos = {
+    "BCC009": {"marca":"Fiat", "modelo":"UNO", "ano":2003,"placa":"BCC009","chassi":"36563652","cor":"branco","km":200.0,"abastecimento": 101.0, "manutencao": 600.0},
+    "BCC006": {"marca":"Fiat", "modelo":"Toro", "ano":2004, "placa":"BCC006", "chassi":"36563653","cor":"preto","km":400.0, "abastecimento": 10.0, "manutencao": 800.0},
+    "BCC008": {"marca":"Fiat", "modelo":"Argo", "ano":2005, "placa":"BCC008", "chassi":"36563654","cor":"azul","km":300.0, "abastecimento": 200.0, "manutencao": 200.0}  
+}
+
+motoristas = {
+    11111: {"nome":"François", "CPF":11111, "RG":223212, "CNH":34221, "qtdViagens": 1, "km": 200.0},
+    22222: {"nome":"Ana", "CPF":22222, "RG":223212, "CNH":34221, "qtdViagens": 1, "km": 400.0},
+    33333: {"nome":"Maria", "CPF":33333, "RG":223212, "CNH":"34221", "qtdViagens": 1, "km": 300.0}
+}
 
 viagens = {
-    1: {"destino":"Bacabal", "origem":"Caxias", "distância":200.0, "motorista":motoristas[11111], "veiculo":veiculos["BCC009"]},
-    2: {"destino":"Bacabal", "origem":"Caxias", "distância":200.0, "motorista":motoristas[11111], "veiculo":veiculos["BCC009"]},
-    3: {"destino":"Bacabal", "origem":"Caxias", "distância":300.0, "motorista":motoristas[33333], "veiculo":veiculos["BCC009"]},
-    4: {"destino":"Bacabal", "origem":"Caxias", "distância":100.0, "motorista":motoristas[22222], "veiculo":veiculos["BCC009"]},
-    5: {"destino":"Bacabal", "origem":"Caxias", "distância":100.0, "motorista":motoristas[22222], "veiculo":veiculos["BCC009"]},
-    6: {"destino":"Bacabal", "origem":"Caxias", "distância":200.0, "motorista":motoristas[11111], "veiculo":veiculos["BCC009"]}
-
-
-
+    '1': {"destino":"Bacabal", "origem":"Caxias", "distância":200.0, "motorista":motoristas[11111], "veiculo":veiculos["BCC009"]},
+    '2': {"destino":"Teresina", "origem":"Caxias", "distância":400.0, "motorista":motoristas[22222], "veiculo":veiculos["BCC006"]},
+    '3': {"destino":"Timon", "origem":"Caxias", "distância":300.0, "motorista":motoristas[33333], "veiculo":veiculos["BCC008"]},
 }
-abastecimentos = {}
-manutencoes = {}
+
+abastecimentos = {
+    '11': {'veiculo': {'marca': 'Fiat', 'modelo': 'UNO', 'ano': 2003, 'placa': 'BCC009', 'chassi': '36563652', 'cor': 'branco', 'km': 200.0, 'abastecimento': 101.0, 'manutencao': 600.0}, 'valor': 101.0, 'data': '09/01/2023', 'quantidade': 23.0},
+    '12': {'veiculo': {'marca': 'Fiat', 'modelo': 'Toro', 'ano': 2004, 'placa': 'BCC006', 'chassi': '36563653', 'cor': 'preto', 'km': 400.0, 'abastecimento': 10.0, 'manutencao': 800.0}, 'valor': 10.0, 'data': '10/01/2023', 'quantidade': 2.5},
+    '12': {'veiculo': {'marca': 'Fiat', 'modelo': 'Argo', 'ano': 2005, 'placa': 'BCC008', 'chassi': '36563654', 'cor': 'azul', 'km': 300.0, 'abastecimento': 200.0, 'manutencao': 200.0}, 'valor': 200.0, 'data': '11/01/2023', 'quantidade': 56.0}
+}
+
+manutencoes = {
+    '11': {'veiculo': {'marca': 'Fiat', 'modelo': 'UNO', 'ano': 2003, 'placa': 'BCC009', 'chassi': '36563652', 'cor': 'branco', 'km': 200.0, 'abastecimento': 101.0, 'manutencao': 600.0}, 'data': '22/04/2023', 'tipo': 'preventiva1', 'custo': 600.0},
+    '12': {'veiculo': {'marca': 'Fiat', 'modelo': 'Toro', 'ano': 2004, 'placa': 'BCC006', 'chassi': '36563653', 'cor': 'preto', 'km': 400.0, 'abastecimento': 10.0, 'manutencao': 800.0}, 'data': '23/04/2023', 'tipo': 'preventiva2', 'custo': 800.0},
+    '13': {'veiculo': {'marca': 'Fiat', 'modelo': 'Argo', 'ano': 2005, 'placa': 'BCC008', 'chassi': '36563654', 'cor': 'azul', 'km': 300.0, 'abastecimento': 200.0, 'manutencao': 200.0}, 'data': '24/04/2023', 'tipo': 'preventiva3', 'custo': 200.0}
+}
 
 while True:
     menu()
@@ -434,13 +469,11 @@ while True:
                 print("\nNão há veículos cadastrados!\n")
             
         case 6:
-            if veiculos or motoristas or viagens or abastecimentos or manutencoes:
-                relatorio(veiculos, motoristas, viagens, abastecimentos, manutencoes)
+            if veiculos or motoristas:
+                relatorio(veiculos, motoristas)
             else:
-                print("\nNão há nada cadastrado!\n")
-        # case 7:
-        #     qtdViagens(viagens, motoristas)
-                    
+                print("\nNão há veículos nem mostoristas cadastrados!\n")  
+                     
         case 0:
             print("\nEncerrando...\n")
             break
