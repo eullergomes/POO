@@ -67,7 +67,7 @@ def editar_motorista(motoristas):
     motorista = check_motorista(motoristas, cpf)
     if motorista:
         print(f"\nAlterar dados {motorista['nome']}")
-            
+        motorista['nome'] = input("Digite o novo nome: ")    
         motorista['RG'] = int(input('Digite o novo RG: '))
         motorista['CNH'] = int(input('Digite o novo CNH: '))
 
