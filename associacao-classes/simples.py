@@ -6,7 +6,6 @@ class Produto:
     def informacoes_prod(self):
         print("Produto: {} / valor: R$ {},00".format(self.__prod_nome, self.__prod_valor))
         
-        
 class CarrinhoDeCompras:
     def __init__(self):
         self.__produtos = []

@@ -64,12 +64,12 @@ def check_motorista(motoristas, cpf):
 #edita um determinado motorista
 def editar_motorista(motoristas):
     cpf = int(input('Informe o CPF: '))
-    motorista = check_motorista(motoristas, cpf)
-    if motorista:
-        print(f"\nAlterar dados {motorista['nome']}")
-        motorista['nome'] = input("Digite o novo nome: ")    
-        motorista['RG'] = int(input('Digite o novo RG: '))
-        motorista['CNH'] = int(input('Digite o novo CNH: '))
+    # motorista = check_motorista(motoristas, cpf)
+    if cpf in motoristas:
+        print(f"\nAlterar dados {motoristas[cpf]['nome']}")
+        motoristas[cpf]['nome'] = input("Digite o novo nome: ")    
+        motoristas[cpf]['RG'] = int(input('Digite o novo RG: '))
+        motoristas[cpf]['CNH'] = int(input('Digite o novo CNH: '))
 
         print("\nDados alterados!\n")
     else:

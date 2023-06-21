@@ -109,3 +109,7 @@ emprestimo1.finalizar()
 #O sistema deve permitir exibir os detalhes dos livros, autores, exemplares e empréstimos realizados
 print("INFORMAÇÕES DO EMPRÉSTIMO:")
 emprestimo1.info_emprestimo()
+
+del livro1
+print("Com livro deletado:\n")
+exemplar1.informacoes_exemplar()

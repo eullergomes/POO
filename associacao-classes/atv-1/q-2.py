@@ -11,7 +11,7 @@ class Item:
         self.__preco = preco
     
     def informacoes_item(self):
-        print("Produto: {} / valor: R$ {}".format(self.__nome, self.__preco))
+        print("Item: {} / valor: R$ {}".format(self.__nome, self.__preco))
 
 class Pedido:
     def __init__(self, numero: int, data: str):

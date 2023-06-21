@@ -19,7 +19,7 @@ class Projeto:
         self.__descricao = descricao
         
     def informacoes_proj(self):
-        print(f"Nome: {self.__nome}\nDescrição: {self.__descricao}")
+        print(f"\tNome: {self.__nome}\n\tDescrição: {self.__descricao}\n")
 
 class Departamento:
     def __init__(self, nome: str, descricao: str):
@@ -42,7 +42,7 @@ class Departamento:
     def informacoes_departamento(self):
         print(f"Nome: {self.__nome}")
         print(f"Descrição: {self.__descricao}")
-        print(f"Projeto:\n")
+        print(f"Projeto:")
         projeto.informacoes_proj()
 
 class Empresa:

@@ -9,10 +9,6 @@ class Curso:
     def __init__(self, nome: str, codigo: str):
         self.__nome = nome
         self.__codigo = codigo
-        self.alunos = []
-
-    def adicionar_aluno(self, aluno):
-        self.alunos.append(aluno)
         
     def informacoes_curso (self):
         print(f"Curso: {self.__nome}")
@@ -35,8 +31,7 @@ class Aluno:
         print("Nome:", self.__nome)
         print("Matrícula:", self.__matricula)
         if self.curso:
-            print("Curso associado:", self.__curso.nome)
-            print("Cód.:", self.__curso.nome)
+            self.curso.informacoes_curso()
         else:
             print("Nenhum curso associado.")
             
