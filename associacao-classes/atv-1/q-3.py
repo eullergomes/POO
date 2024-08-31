@@ -66,6 +66,10 @@ class Empresa:
     @property
     def endereco(self):
         return self.__endereco
+    
+    @property
+    def departamentos(self):
+        return self.__departamentos
         
         
 # Criando uma empresa
@@ -98,3 +102,5 @@ departamento1.informacoes_departamento()
 empresa.listar_departamentos()
 print("Funcionários do Departamento Vendas:")
 departamento1.listar_funcionarios()
+
+print(empresa.departamentos)
